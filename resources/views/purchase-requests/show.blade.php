@@ -5,7 +5,11 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">PR {{ $pr->pr_no }}</h2>
                 <x-status-chip :status="$pr->status->value" />
             </div>
-            <a href="{{ route('purchase-requests.index') }}" class="text-sm text-gray-600 hover:underline">Back to list</a>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('purchase-requests.print', $pr) }}"
+                   class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">Print</a>
+                <a href="{{ route('purchase-requests.index') }}" class="text-sm text-gray-600 hover:underline">Back to list</a>
+            </div>
         </div>
     </x-slot>
 

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Purchase Request Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #eff4f2; color: #172e35; font: 16px system-ui, sans-serif; }
+    main { width: min(92%, 1280px); margin: 22px auto 36px; }
+    header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+    h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -.035em; }
+    header p { margin: 4px 0 0; color: #475a71; }
+    button { border: 0; border-radius: 9px; background: #155e52; color: white; padding: 13px 18px; font: inherit; font-weight: 650; cursor: pointer; }
+    button:hover { background: #104d43; }
+    button:focus-visible { outline: 3px solid #155e52; outline-offset: 4px; }
+    .preview { overflow-x: auto; background: white; box-shadow: 0 5px 24px #172e351a; }
+    .paper { min-width: 780px; padding: 4% 3.3% 3.3%; color: #111; font: clamp(12px, 1.22vw, 17px)/1.35 "Times New Roman", serif; }
+    h2 { margin: 0 0 1.1em; text-align: center; font-size: 1.53em; }
+    .identity { display: grid; grid-template-columns: 76.5% 23.5%; font-weight: bold; }
+    .identity span { padding: .25em .4em .45em; }
+    .identity span:last-child { padding-left: 1.2em; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { padding: .35em; vertical-align: middle; }
+    .request { border: 2px solid; }
+    .request th, .request td { border: 1px solid; border-inline-width: 2px; }
+    .request thead th, .request thead td, .purpose td { border-bottom: 2px solid; }
+    .request tbody td { height: 2.05em; }
+    .request .item td { height: 4.25em; }
+    .request .purpose td { height: 3.5em; border-top: 2px solid; }
+    .center { text-align: center; }
+    .amount { text-align: right; white-space: nowrap; }
+    .blank { display: inline-block; width: 4em; border-bottom: 1px solid; vertical-align: baseline; }
+    .signatures { font-family: Arial, sans-serif; }
+    .signatures th, .signatures td { border: 1px solid; height: 2.1em; text-align: left; }
+    @page { size: A4 landscape; margin: 12mm; }
+    @media print {
+      body { background: white; }
+      main { width: auto; margin: 0; }
+      header { display: none; }
+      .preview { overflow: visible; box-shadow: none; }
+      .paper { min-width: 0; padding: 0; font-size: 10.5pt; }
+      tr, .signatures { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><h1>Purchase Request</h1><p>Created</p></div>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </header>
+    <div class="preview" role="region" aria-label="Printable Purchase Request preview" tabindex="0">
+      <article class="paper" aria-labelledby="form-title">
+        <h2 id="form-title">PURCHASE REQUEST</h2>
+        <div class="identity">
+          <span>Entity Name: &nbsp; DOLE RO5</span>
+          <span>Fund Cluster: &nbsp; 101</span>
+        </div>
+        <table class="request" aria-label="Purchase request details">
+          <colgroup>
+            <col style="width:11%"><col style="width:14%"><col style="width:44%">
+            <col style="width:7.5%"><col style="width:9.5%"><col style="width:14%">
+          </colgroup>
+          <thead>
+            <tr>
+              <td class="center" colspan="2">Office/Section:</td>
+              <td colspan="2"><strong>PR No.: 2026-11-1282</strong></td>
+              <td rowspan="2" colspan="2"><strong>Date:</strong> <span class="blank"></span></td>
+            </tr>
+            <tr>
+              <td class="center" colspan="2"><strong>CSPO</strong></td>
+              <td colspan="2"><strong>Responsibility Center Code:</strong> <span class="blank"></span></td>
+            </tr>
+            <tr>
+              <th scope="col">Stock/<br>Property No.</th>
+              <th scope="col">Unit</th>
+              <th scope="col">Item Description</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Unit Cost</th>
+              <th scope="col">Total Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="item">
+              <td></td><td class="center">lot</td>
+              <td><strong>Drinking Water for Camarines Sur Provincial Office for C.Y. 2027</strong></td>
+              <td class="center">1</td><td class="amount">25,000.00</td><td class="amount">25,000.00</td>
+            </tr>
+            <tr><td></td><td></td><td class="center">*nothing follows*</td><td></td><td></td><td></td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td><strong>Total</strong></td><td></td><td></td><td class="amount">25,000.00</td></tr>
+            <tr class="purpose"><td colspan="6">Purpose: Drinking Water for Camarines Sur Provincial Office for C.Y. 2027</td></tr>
+          </tbody>
+        </table>
+        <table class="signatures" aria-label="Signatories">
+          <colgroup><col style="width:25%"><col style="width:44%"><col style="width:31%"></colgroup>
+          <thead>
+            <tr><th scope="col">Requested by:</th><th scope="col">Certified Funds Available:</th><th scope="col">Approved by:</th></tr>
+          </thead>
+          <tbody>
+            <tr aria-hidden="true"><td></td><td></td><td></td></tr>
+            <tr><td><strong>JOAN B. REBUTICA</strong></td><td><strong>ANGELICA JOY L. NAPOLIS</strong></td><td><strong>ATTY. JOAN N. NOYA-NIDUA</strong></td></tr>
+            <tr><td>Admin. Asst. II</td><td>Accountant III</td><td>Assistant Regional Director</td></tr>
+            <tr aria-hidden="true"><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </main>
+</body>
+</html>
