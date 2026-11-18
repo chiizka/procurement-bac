@@ -32,16 +32,6 @@ class PurchaseRequest extends Model
         return $this->hasMany(PrItem::class)->orderBy('sort_order');
     }
 
-    public function requester(): BelongsTo
-    {
-        return $this->belongsTo(Signatory::class, 'requested_by');
-    }
-
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(Signatory::class, 'approved_by');
-    }
-
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
