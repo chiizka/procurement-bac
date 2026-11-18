@@ -74,6 +74,60 @@
                 </table>
             </div>
 
+            {{-- RFQs under this PR --}}
+            @php
+                $canWrite = auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin);
+                $isCreatedPr = $pr->status === \App\Enums\DocStatus::Created;
+                $cov = $pr->coverage();
+            @endphp
+            <div class="bg-white shadow-sm sm:rounded-lg">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h3 class="font-semibold text-gray-800">RFQs under this PR</h3>
+                    @if ($canWrite && $isCreatedPr)
+                        <a href="{{ route('purchase-requests.rfqs.create', $pr) }}"
+                           class="rounded-md bg-gray-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700">+ New RFQ</a>
+                    @endif
+                </div>
+
+                @if (! $isCreatedPr)
+                    <p class="px-6 pb-4 text-sm text-gray-500">RFQs can be made once this PR is Created.</p>
+                @elseif ($pr->rfqs->isEmpty())
+                    <p class="px-6 pb-4 text-sm text-gray-500">No RFQ yet.</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50 text-left text-xs font-semibold uppercase text-gray-500">
+                                <tr>
+                                    <th class="px-4 py-3">RFQ No.</th>
+                                    <th class="px-4 py-3">Label</th>
+                                    <th class="px-4 py-3">Closing</th>
+                                    <th class="px-4 py-3 text-right">Items</th>
+                                    <th class="px-4 py-3 text-right">ABC</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($pr->rfqs as $rfq)
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-900">{{ $rfq->rfq_no }}</td>
+                                        <td class="px-4 py-3">{{ $rfq->lot_label ?: '—' }}</td>
+                                        <td class="px-4 py-3">{{ $rfq->deadline_at?->format('M d, g:i A') ?? 'not set' }}</td>
+                                        <td class="px-4 py-3 text-right">{{ $rfq->item_count }}</td>
+                                        <td class="px-4 py-3 text-right">{{ number_format($rfq->total_amount, 2) }}</td>
+                                        <td class="px-4 py-3"><x-status-chip :status="$rfq->status->value" /></td>
+                                        <td class="px-4 py-3 text-right"><a href="{{ route('rfqs.show', $rfq) }}" class="text-indigo-600 hover:underline">View</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="px-6 py-3 text-xs {{ $cov['covered'] < $cov['total'] ? 'text-amber-700' : 'text-gray-500' }}">
+                        Coverage: {{ $cov['covered'] }} of {{ $cov['total'] }} PR items are on an RFQ
+                    </p>
+                @endif
+            </div>
+
             @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
                 <div class="flex items-center gap-3">
                     <a href="{{ route('purchase-requests.edit', $pr) }}"

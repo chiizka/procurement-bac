@@ -20,7 +20,11 @@ class PurchaseRequestController extends Controller
 
     public function index()
     {
-        $purchaseRequests = PurchaseRequest::withCount('items')
+        $purchaseRequests = PurchaseRequest::withCount([
+                'items',
+                'rfqs',
+                'rfqs as rfqs_created_count' => fn ($q) => $q->where('status', 'created'),
+            ])
             ->latest('pr_date')->latest('id')->paginate(15);
 
         return view('purchase-requests.index', compact('purchaseRequests'));
@@ -57,7 +61,12 @@ class PurchaseRequestController extends Controller
 
     public function show(PurchaseRequest $purchaseRequest)
     {
-        $purchaseRequest->load('items');
+        $purchaseRequest->load([
+            'items',
+            'rfqs' => fn ($q) => $q->withCount([
+                'items as item_count' => fn ($i) => $i->where('line_type', 'item'),
+            ]),
+        ]);
 
         return view('purchase-requests.show', ['pr' => $purchaseRequest]);
     }
