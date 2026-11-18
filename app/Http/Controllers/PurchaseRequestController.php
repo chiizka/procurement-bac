@@ -62,6 +62,11 @@ class PurchaseRequestController extends Controller
         return view('purchase-requests.show', ['pr' => $purchaseRequest]);
     }
 
+    public function printPreview(PurchaseRequest $purchaseRequest)
+    {
+        return view('purchase-requests.printPR', ['pr' => $purchaseRequest->load('items')]);
+    }
+
     public function edit(PurchaseRequest $purchaseRequest)
     {
         $this->authorizeWrite();
