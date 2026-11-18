@@ -25,6 +25,7 @@
                             <th class="px-4 py-3">Purpose</th>
                             <th class="px-4 py-3 text-right">Total</th>
                             <th class="px-4 py-3">PR</th>
+                            <th class="px-4 py-3">RFQ</th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -37,6 +38,16 @@
                                 <td class="px-4 py-3">{{ \Illuminate\Support\Str::limit($pr->purpose, 60) }}</td>
                                 <td class="px-4 py-3 text-right">{{ number_format($pr->total_amount, 2) }}</td>
                                 <td class="px-4 py-3"><x-status-chip :status="$pr->status->value" /></td>
+                                <td class="px-4 py-3">
+                                    @if ($pr->rfqs_count === 0)
+                                        <span class="text-xs text-gray-400">None</span>
+                                    @else
+                                        <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                                            {{ $pr->rfqs_created_count === $pr->rfqs_count ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700' }}">
+                                            RFQ {{ $pr->rfqs_created_count }}/{{ $pr->rfqs_count }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">
                                     <a href="{{ route('purchase-requests.show', $pr) }}" class="text-indigo-600 hover:underline">View</a>
                                     @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
@@ -45,7 +56,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No purchase requests yet.</td></tr>
+                            <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No purchase requests yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

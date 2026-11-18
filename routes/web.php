@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\RfqController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,6 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/purchase-requests/{purchaseRequest}/print', [PurchaseRequestController::class, 'printPreview'])
         ->name('purchase-requests.print');
     Route::resource('purchase-requests', PurchaseRequestController::class);
+    Route::resource('purchase-requests.rfqs', RfqController::class)->shallow()->except(['index']);
+    Route::get('/rfqs/{rfq}/print', [RfqController::class, 'printPreview'])->name('rfqs.print');
 });
 
 require __DIR__.'/auth.php';
