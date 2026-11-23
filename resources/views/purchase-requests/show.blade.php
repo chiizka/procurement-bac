@@ -19,6 +19,36 @@
                 <div class="rounded-md bg-green-50 p-3 text-sm text-green-800">{{ session('status') }}</div>
             @endif
 
+            @if ($pr->group)
+                <div class="rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+                    Part of group PR <a href="{{ route('purchase-requests.show', $pr->group) }}" class="font-medium underline">{{ $pr->group->pr_no }}</a>.
+                    This PR is locked; make RFQs from the group PR.
+                </div>
+            @endif
+
+            @if ($pr->is_group)
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold text-gray-800">PRs in this group</h3>
+                        @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin) && $pr->rfqs()->withTrashed()->doesntExist())
+                            <form method="POST" action="{{ route('group-purchase-requests.destroy', $pr) }}" onsubmit="return confirm('Ungroup? The group PR will be deleted and its PRs become solo again.')">
+                                @csrf @method('DELETE')
+                                <button class="text-sm text-red-600 hover:underline">Ungroup</button>
+                            </form>
+                        @endif
+                    </div>
+                    <ul class="mt-3 divide-y text-sm">
+                        @foreach ($pr->members as $m)
+                            <li class="flex justify-between py-2">
+                                <a href="{{ route('purchase-requests.show', $m) }}" class="text-indigo-600 hover:underline">{{ $m->pr_no }}</a>
+                                <span class="text-gray-600">{{ \Illuminate\Support\Str::limit($m->purpose, 70) }}</span>
+                                <span>{{ number_format($m->total_amount, 2) }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3 text-sm">
                     <div><dt class="text-gray-500">PR Date</dt><dd>{{ $pr->pr_date->format('M d, Y') }}</dd></div>

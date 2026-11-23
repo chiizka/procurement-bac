@@ -25,7 +25,12 @@ class PurchaseRequestController extends Controller
                 'rfqs',
                 'rfqs as rfqs_created_count' => fn ($q) => $q->where('status', 'created'),
             ])
+            ->whereNull('group_id') // grouped PRs are shown inside their group PR
             ->latest('pr_date')->latest('id')->paginate(15);
+
+        $purchaseRequests->getCollection()
+            ->where('is_group', true)
+            ->load('items.sourceItem.purchaseRequest:id,pr_no');
 
         return view('purchase-requests.index', compact('purchaseRequests'));
     }
@@ -63,6 +68,8 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest->load([
             'items',
+            'group',    // the group PR this PR belongs to (if any)
+            'members',  // the PRs inside this PR (if it is a group PR)
             'rfqs' => fn ($q) => $q->withCount([
                 'items as item_count' => fn ($i) => $i->where('line_type', 'item'),
             ]),
@@ -79,6 +86,7 @@ class PurchaseRequestController extends Controller
     public function edit(PurchaseRequest $purchaseRequest)
     {
         $this->authorizeWrite();
+        $this->ensureEditable($purchaseRequest);
         $purchaseRequest->load('items');
 
         return view('purchase-requests.edit', ['pr' => $purchaseRequest]);
@@ -86,6 +94,8 @@ class PurchaseRequestController extends Controller
 
     public function update(StorePurchaseRequestRequest $request, PurchaseRequest $purchaseRequest)
     {
+        $this->ensureEditable($purchaseRequest);
+
         DB::transaction(function () use ($request, $purchaseRequest) {
             $locked = $purchaseRequest->status === DocStatus::Created;
 
@@ -123,6 +133,17 @@ class PurchaseRequestController extends Controller
         $user = Auth::user();
 
         abort_unless($user?->hasRole(Role::Bac, Role::Admin), 403);
+    }
+
+    /**
+     * A PR that was grouped is locked (its items were copied into the group PR),
+     * and a group PR can't be edited once it has RFQs, because syncItems()
+     * deletes and recreates every item, which would break the RFQ links.
+     */
+    private function ensureEditable(PurchaseRequest $pr): void
+    {
+        abort_if($pr->group_id !== null, 403, 'This PR is in a group PR and is locked.');
+        abort_if($pr->is_group && $pr->rfqs()->exists(), 403, 'This group PR already has RFQs and can no longer be edited.');
     }
 
     private function syncItems(PurchaseRequest $pr, array $rows): void
