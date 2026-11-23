@@ -3,8 +3,12 @@
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Purchase Requests</h2>
             @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
-                <a href="{{ route('purchase-requests.create') }}"
-                   class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">New PR</a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('purchase-requests.create') }}"
+                       class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">New PR</a>
+                    <a href="{{ route('group-purchase-requests.create') }}"
+                       class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50">Group PRs</a>
+                </div>
             @endif
         </div>
     </x-slot>
@@ -32,7 +36,12 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($purchaseRequests as $pr)
                             <tr>
-                                <td class="px-4 py-3 font-medium text-gray-900">{{ $pr->pr_no }}</td>
+                                <td class="px-4 py-3 font-medium text-gray-900">
+                                    {{ $pr->pr_no }}
+                                    @if ($pr->is_group)
+                                        <span class="ml-2 rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">Group</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3">{{ $pr->pr_date->format('M d, Y') }}</td>
                                 <td class="px-4 py-3">{{ $pr->office_section }}</td>
                                 <td class="px-4 py-3">{{ \Illuminate\Support\Str::limit($pr->purpose, 60) }}</td>
@@ -55,6 +64,23 @@
                                     @endif
                                 </td>
                             </tr>
+
+                            {{-- Lots of a group PR, one indented row each --}}
+                            @if ($pr->is_group)
+                                @foreach ($pr->lots() as $lot)
+                                    <tr class="bg-gray-50 text-xs text-gray-700">
+                                        <td class="py-2 pl-10 pr-4 font-medium" colspan="3">&#8627; {{ $lot['name'] }}</td>
+                                        <td class="px-4 py-2">
+                                            @foreach ($lot['prs'] as $id => $no)
+                                                <a href="{{ route('purchase-requests.show', $id) }}"
+                                                   class="mr-2 text-indigo-600 hover:underline">{{ $no }}</a>
+                                            @endforeach
+                                        </td>
+                                        <td class="px-4 py-2 text-right">{{ number_format($lot['total'], 2) }}</td>
+                                        <td class="px-4 py-2" colspan="3"></td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         @empty
                             <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No purchase requests yet.</td></tr>
                         @endforelse

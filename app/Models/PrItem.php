@@ -10,7 +10,7 @@ class PrItem extends Model
 {
     protected $fillable = [
         'purchase_request_id', 'sort_order', 'line_type', 'stock_no',
-        'unit', 'description', 'quantity', 'unit_cost', 'amount',
+        'unit', 'description', 'quantity', 'unit_cost', 'amount', 'source_item_id',
     ];
 
     protected function casts(): array
@@ -26,5 +26,10 @@ class PrItem extends Model
     public function purchaseRequest(): BelongsTo
     {
         return $this->belongsTo(PurchaseRequest::class);
+    }
+
+    public function sourceItem(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'source_item_id');
     }
 }

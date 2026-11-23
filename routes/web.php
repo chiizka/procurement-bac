@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RfqController;
+use App\Http\Controllers\GroupPurchaseRequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('purchase-requests', PurchaseRequestController::class);
     Route::resource('purchase-requests.rfqs', RfqController::class)->shallow()->except(['index']);
     Route::get('/rfqs/{rfq}/print', [RfqController::class, 'printPreview'])->name('rfqs.print');
+    Route::get('/group-purchase-requests/create', [GroupPurchaseRequestController::class, 'create'])->name('group-purchase-requests.create');
+    Route::post('/group-purchase-requests', [GroupPurchaseRequestController::class, 'store'])->name('group-purchase-requests.store');
+    Route::delete('/group-purchase-requests/{purchaseRequest}', [GroupPurchaseRequestController::class, 'destroy'])->name('group-purchase-requests.destroy');
 });
 
 require __DIR__.'/auth.php';

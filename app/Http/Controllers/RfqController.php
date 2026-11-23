@@ -130,6 +130,7 @@ class RfqController extends Controller
     private function ensureCreatedPr(PurchaseRequest $pr): void
     {
         abort_unless($pr->status === DocStatus::Created, 403, 'RFQs can only be made from a Created PR.');
+        abort_if($pr->group_id !== null, 403, 'This PR is in a group. Make the RFQ from the group PR.');
     }
 
     /**
