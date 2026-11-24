@@ -18,7 +18,7 @@ class PurchaseRequest extends Model
     protected $fillable = [
         'pr_no', 'pr_date', 'entity_name', 'fund_cluster', 'office_section',
         'responsibility_center_code', 'purpose', 'end_user', 'total_amount',
-        'requested_by', 'approved_by', 'status', 'created_by', 'updated_by',
+        'requested_by', 'approved_by', 'requested_by_position', 'certified_funds_available', 'certified_funds_available_position', 'approved_by_position', 'status', 'created_by', 'updated_by',
         'is_group', 'group_id',
     ];
 
@@ -82,7 +82,7 @@ class PurchaseRequest extends Model
                 if ($current) {
                     $lots->push($current);
                 }
-                $current = ['name' => $item->description, 'total' => 0.0, 'prs' => []];
+                $current = ['name' => $item->description, 'total' => 0.0, 'prs' => [], 'item_ids' => [$item->id]];
                 continue;
             }
 
@@ -90,6 +90,7 @@ class PurchaseRequest extends Model
                 continue;
             }
 
+            $current['item_ids'][] = $item->id;
             $current['total'] += (float) ($item->amount ?? 0);
 
             $source = $item->sourceItem?->purchaseRequest;

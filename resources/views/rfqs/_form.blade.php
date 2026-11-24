@@ -44,13 +44,13 @@
     {{-- Header --}}
     <div class="bg-white shadow-sm sm:rounded-lg p-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-            <label class="block text-sm font-medium text-gray-700">RFQ No. *</label>
+            <label class="block text-sm font-medium text-gray-700">RFQ No. <span class="text-red-600">*</span></label>
             <input type="text" name="rfq_no" value="{{ old('rfq_no', $rfq?->rfq_no) }}" @readonly($locked)
                    class="{{ $input }} {{ $locked ? 'bg-gray-100' : '' }}" placeholder="601-2026">
             @if ($locked)<p class="mt-1 text-xs text-gray-500">Locked once the RFQ is created.</p>@endif
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">RFQ Date *</label>
+            <label class="block text-sm font-medium text-gray-700">RFQ Date <span class="text-red-600">*</span></label>
             <input type="date" name="rfq_date"
                    value="{{ old('rfq_date', $rfq?->rfq_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}" class="{{ $input }}">
         </div>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="sm:col-span-3">
-            <label class="block text-sm font-medium text-gray-700">Purpose / Project title *</label>
+            <label class="block text-sm font-medium text-gray-700">Purpose / Project title <span class="text-red-600">*</span></label>
             <textarea name="purpose" rows="2" class="{{ $input }}">{{ old('purpose', $rfq?->purpose ?? $pr->purpose) }}</textarea>
         </div>
 
@@ -114,6 +114,15 @@
 
             <div class="mt-3 max-h-80 overflow-auto border rounded-md">
                 <table class="min-w-full text-sm">
+                    <thead class="sticky top-0 bg-gray-50 text-left text-xs font-semibold uppercase text-gray-500">
+                        <tr>
+                            <th scope="col" class="px-3 py-2">Select</th>
+                            <th scope="col" class="px-2 py-2">Description</th>
+                            <th scope="col" class="px-2 py-2">Quantity / Unit</th>
+                            <th scope="col" class="px-2 py-2 text-right">ABC Unit Cost</th>
+                            <th scope="col" class="px-2 py-2">RFQ Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <template x-for="(s, idx) in source" :key="s.id">
                             <tr class="border-t first:border-t-0" :class="s.line_type === 'lot_header' ? 'bg-gray-50 font-semibold' : ''">
@@ -137,6 +146,7 @@
                                 </td>
                                 <td class="px-2 py-2 align-top whitespace-nowrap text-xs">
                                     <template x-if="s.line_type !== 'lot_header' && inRows(s.id)"><span class="rounded bg-green-50 px-2 py-0.5 text-green-700">added</span></template>
+                                    <template x-if="s.line_type !== 'lot_header' && !inRows(s.id) && !s.on.length"><span class="rounded bg-gray-100 px-2 py-0.5 text-gray-700" x-text="picked.includes(s.id) ? 'Selected' : 'Not yet selected'"></span></template>
                                     <template x-if="s.on.length"><span class="rounded bg-amber-50 px-2 py-0.5 text-amber-700" x-text="'on RFQ ' + s.on.join(', ')"></span></template>
                                 </td>
                             </tr>
@@ -151,9 +161,7 @@
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-gray-800">RFQ items</h3>
                 <div class="flex gap-2">
-                    <button type="button" @click="add('item')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Item</button>
-                    <button type="button" @click="add('lot_header')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Lot header</button>
-                    <button type="button" @click="add('note')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Note line</button>
+                    <button type="button" @click="add('item')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">Add item</button>
                 </div>
             </div>
 
@@ -184,8 +192,17 @@
                                         <option value="note">Note</option>
                                     </select>
                                 </td>
-                                <td class="px-2 py-2"><input type="text" :name="`items[${i}][stock_no]`" x-model="row.stock_no" class="{{ $input }}"></td>
-                                <td class="px-2 py-2"><input type="text" :name="`items[${i}][unit]`" x-model="row.unit" class="{{ $input }}"></td>
+                                <td class="px-2 py-2"><input type="text" :name="`items[${i}][stock_no]`" x-model="row.stock_no" x-show="row.line_type === 'item'" :disabled="row.line_type !== 'item'" class="{{ $input }}"></td>
+                                <td class="px-2 py-2">
+                                    <div x-show="row.line_type === 'item'">
+                                        <select :value="row.custom_unit ? '__custom__' : row.unit" @change="row.custom_unit = $event.target.value === '__custom__'; row.unit = row.custom_unit ? '' : $event.target.value" :disabled="row.line_type !== 'item'" :aria-label="'Unit for row ' + (i + 1)" class="{{ $input }} min-w-[7rem]">
+                                            <option value="">Select unit</option>
+                                            <template x-for="unit in units" :key="unit"><option :value="unit" x-text="unit"></option></template>
+                                            <option value="__custom__">Other…</option>
+                                        </select>
+                                        <input :name="`items[${i}][unit]`" x-model="row.unit" x-show="row.custom_unit" :disabled="row.line_type !== 'item'" :type="row.custom_unit ? 'text' : 'hidden'" maxlength="50" placeholder="Enter unit" :aria-label="'Custom unit for row ' + (i + 1)" class="{{ $input }}">
+                                    </div>
+                                </td>
                                 <td class="px-2 py-2"><textarea rows="3" :name="`items[${i}][description]`" x-model="row.description" class="{{ $input }}"></textarea></td>
                                 <td class="px-2 py-2"><input type="number" step="0.01" min="0" :name="`items[${i}][quantity]`" x-model="row.quantity" x-show="row.line_type === 'item'" class="{{ $input }}"></td>
                                 <td class="px-2 py-2"><input type="number" step="0.01" min="0" :name="`items[${i}][unit_cost]`" x-model="row.unit_cost" x-show="row.line_type === 'item'" class="{{ $input }}"></td>
@@ -223,7 +240,9 @@
 <script>
     function rfqEditor(source, initial) {
         let counter = 0;
+        const units = ['pc', 'set', 'pair', 'doz', 'pack', 'box', 'ctn', 'ream', 'roll', 'sheet', 'pad', 'book', 'btl', 'can', 'jar', 'tube', 'bag', 'sack', 'bdl', 'unit', 'lot', 'kit', 'g', 'kg', 't', 'mL', 'L', 'mm', 'cm', 'm', 'km', 'in', 'ft', 'yd', 'sqm', 'cbm', 'hr', 'day', 'mo', 'yr', 'trip', 'svc'];
         const make = (r = {}) => ({
+            custom_unit: !!r.unit && !units.includes(r.unit),
             key: counter++,
             pr_item_id: r.pr_item_id ?? '',
             line_type: r.line_type ?? 'item',
@@ -240,6 +259,7 @@
 
         return {
             source,
+            units,
             picked: [],
             rows: (initial || []).map(make),
 

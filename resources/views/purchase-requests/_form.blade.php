@@ -26,18 +26,18 @@
 
     <div class="bg-white shadow-sm sm:rounded-lg p-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-            <label class="block text-sm font-medium text-gray-700">PR No. *</label>
+            <label class="block text-sm font-medium text-gray-700">PR No. <span class="text-red-600">*</span></label>
             <input type="text" name="pr_no" value="{{ old('pr_no', $pr?->pr_no) }}" @readonly($locked)
                    class="{{ $input }} {{ $locked ? 'bg-gray-100' : '' }}" placeholder="2026-11-1278">
             @if ($locked)<p class="mt-1 text-xs text-gray-500">Locked once the PR is created.</p>@endif
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">PR Date *</label>
+            <label class="block text-sm font-medium text-gray-700">PR Date <span class="text-red-600">*</span></label>
             <input type="date" name="pr_date"
                    value="{{ old('pr_date', $pr?->pr_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}" class="{{ $input }}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Entity *</label>
+            <label class="block text-sm font-medium text-gray-700">Entity <span class="text-red-600">*</span></label>
             <input type="text" name="entity_name" value="{{ old('entity_name', $pr?->entity_name ?? 'DOLE RO5') }}" class="{{ $input }}">
         </div>
         <div>
@@ -45,7 +45,7 @@
             <input type="text" name="fund_cluster" value="{{ old('fund_cluster', $pr?->fund_cluster) }}" class="{{ $input }}" placeholder="101">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Office / Section *</label>
+            <label class="block text-sm font-medium text-gray-700">Office / Section <span class="text-red-600">*</span></label>
             <input type="text" name="office_section" value="{{ old('office_section', $pr?->office_section) }}" class="{{ $input }}" placeholder="CSPO">
         </div>
         <div>
@@ -53,20 +53,30 @@
             <input type="text" name="responsibility_center_code" value="{{ old('responsibility_center_code', $pr?->responsibility_center_code) }}" class="{{ $input }}">
         </div>
         <div class="sm:col-span-3">
-            <label class="block text-sm font-medium text-gray-700">Purpose *</label>
+            <label class="block text-sm font-medium text-gray-700">Purpose <span class="text-red-600">*</span></label>
             <textarea name="purpose" rows="2" class="{{ $input }}">{{ old('purpose', $pr?->purpose) }}</textarea>
         </div>
-        <div>
+        <div class="sm:col-span-3">
             <label class="block text-sm font-medium text-gray-700">End User</label>
             <input type="text" name="end_user" value="{{ old('end_user', $pr?->end_user) }}" class="{{ $input }}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Requested by</label>
-            <input type="text" name="requested_by" value="{{ old('requested_by', $pr?->requested_by) }}" class="{{ $input }}">
+            <label for="requested_by" class="block text-sm font-medium text-gray-700">Requested by</label>
+            <input id="requested_by" type="text" name="requested_by" value="{{ old('requested_by', $pr?->requested_by) }}" class="{{ $input }}">
+            <label for="requested_by_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
+            <input id="requested_by_position" type="text" name="requested_by_position" value="{{ old('requested_by_position', $pr?->requested_by_position) }}" class="{{ $input }}">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Approved by</label>
-            <input type="text" name="approved_by" value="{{ old('approved_by', $pr?->approved_by) }}" class="{{ $input }}">
+            <label for="certified_funds_available" class="block text-sm font-medium text-gray-700">Certified Funds Available</label>
+            <input id="certified_funds_available" type="text" name="certified_funds_available" value="{{ old('certified_funds_available', $pr?->certified_funds_available) }}" class="{{ $input }}">
+            <label for="certified_funds_available_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
+            <input id="certified_funds_available_position" type="text" name="certified_funds_available_position" value="{{ old('certified_funds_available_position', $pr?->certified_funds_available_position) }}" class="{{ $input }}">
+        </div>
+        <div>
+            <label for="approved_by" class="block text-sm font-medium text-gray-700">Approved by</label>
+            <input id="approved_by" type="text" name="approved_by" value="{{ old('approved_by', $pr?->approved_by) }}" class="{{ $input }}">
+            <label for="approved_by_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
+            <input id="approved_by_position" type="text" name="approved_by_position" value="{{ old('approved_by_position', $pr?->approved_by_position) }}" class="{{ $input }}">
         </div>
     </div>
 
@@ -74,11 +84,6 @@
     <div class="bg-white shadow-sm sm:rounded-lg p-6" x-data="itemsEditor(@js($rows))">
         <div class="flex items-center justify-between">
             <h3 class="font-semibold text-gray-800">Items</h3>
-            <div class="flex gap-2">
-                <button type="button" @click="add('item')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Item</button>
-                <button type="button" @click="add('lot_header')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Lot header</button>
-                <button type="button" @click="add('note')" class="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">+ Note line</button>
-            </div>
         </div>
 
         <div class="mt-4 overflow-x-auto">
@@ -101,7 +106,6 @@
                             <td class="px-2 py-2">
                                 <select :name="`items[${i}][line_type]`" x-model="row.line_type" class="{{ $input }}">
                                     <option value="item">Item</option>
-                                    <option value="lot_header">Lot header</option>
                                     <option value="note">Note</option>
                                 </select>
                             </td>
@@ -124,6 +128,7 @@
                 </tfoot>
             </table>
         </div>
+        <button type="button" @click="add('item')" class="mt-3 rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50">Add item</button>
     </div>
 
     <div class="flex items-center gap-3">

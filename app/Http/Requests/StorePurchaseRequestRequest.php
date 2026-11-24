@@ -36,6 +36,10 @@ class StorePurchaseRequestRequest extends FormRequest
             'end_user' => ['nullable', 'string', 'max:255'],
             'requested_by' => ['nullable', 'string', 'max:255'],
             'approved_by' => ['nullable', 'string', 'max:255'],
+            'requested_by_position' => ['nullable', 'string', 'max:255'],
+            'certified_funds_available' => ['nullable', 'string', 'max:255'],
+            'certified_funds_available_position' => ['nullable', 'string', 'max:255'],
+            'approved_by_position' => ['nullable', 'string', 'max:255'],
 
             'items' => $creating ? ['required', 'array', 'min:1'] : ['nullable', 'array'],
             'items.*.line_type' => ['required', Rule::enum(LineType::class)],
