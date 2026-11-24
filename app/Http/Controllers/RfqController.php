@@ -63,7 +63,7 @@ class RfqController extends Controller
 
     public function show(Rfq $rfq)
     {
-        $rfq->load(['items', 'purchaseRequest']);
+        $rfq->load(['items', 'purchaseRequest', 'twgReport']);
 
         return view('rfqs.show', compact('rfq'));
     }
@@ -76,6 +76,7 @@ class RfqController extends Controller
     public function edit(Rfq $rfq)
     {
         $this->authorizeWrite();
+        abort_if($rfq->twgReport()->exists(), 403, 'This RFQ already has a TWG report and can no longer be edited.');
         $rfq->load('items');
         $pr = $rfq->purchaseRequest->load('items');
 
@@ -88,6 +89,8 @@ class RfqController extends Controller
 
     public function update(StoreRfqRequest $request, Rfq $rfq)
     {
+        abort_if($rfq->twgReport()->exists(), 403, 'This RFQ already has a TWG report and can no longer be edited.');
+
         DB::transaction(function () use ($request, $rfq) {
             $locked = $rfq->status === DocStatus::Created;
 

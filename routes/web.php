@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RfqController;
 use App\Http\Controllers\GroupPurchaseRequestController;
+use App\Http\Controllers\TwgReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/group-purchase-requests/create', [GroupPurchaseRequestController::class, 'create'])->name('group-purchase-requests.create');
     Route::post('/group-purchase-requests', [GroupPurchaseRequestController::class, 'store'])->name('group-purchase-requests.store');
     Route::delete('/group-purchase-requests/{purchaseRequest}', [GroupPurchaseRequestController::class, 'destroy'])->name('group-purchase-requests.destroy');
+    Route::resource('rfqs.twg-reports', TwgReportController::class)->shallow()->except(['index']);
+    Route::get('/twg-reports/{twgReport}/print', [TwgReportController::class, 'printPreview'])->name('twg-reports.print');
 });
 
 require __DIR__.'/auth.php';
