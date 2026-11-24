@@ -76,6 +76,20 @@
                 </table>
             </div>
 
+            @if ($rfq->status === \App\Enums\DocStatus::Created)
+                <div class="bg-white shadow-sm sm:rounded-lg p-6 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-800">TWG Report</h3>
+                    @if ($rfq->twgReport)
+                        <a href="{{ route('twg-reports.show', $rfq->twgReport) }}" class="text-sm text-indigo-600 hover:underline">
+                            View TWG {{ $rfq->twgReport->twg_no }}
+                        </a>
+                    @elseif (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
+                        <a href="{{ route('rfqs.twg-reports.create', $rfq) }}"
+                        class="rounded-md bg-gray-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700">+ Create TWG Report</a>
+                    @endif
+                </div>
+            @endif
+
             @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
                 <div class="flex items-center gap-3">
                     <a href="{{ route('rfqs.edit', $rfq) }}"
