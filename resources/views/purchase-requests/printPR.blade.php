@@ -121,8 +121,8 @@
           </thead>
           <tbody>
             <tr aria-hidden="true"><td></td><td></td><td></td></tr>
-            <tr><td><strong>JOAN B. REBUTICA</strong></td><td><strong>ANGELICA JOY L. NAPOLIS</strong></td><td><strong>ATTY. JOAN N. NOYA-NIDUA</strong></td></tr>
-            <tr aria-hidden="true"><td>Admin Asst. II</td><td>Accountant II</td><td>Assistant Regional Director</td></tr>
+            <tr><td><strong>{{ $pr->requested_by }}</strong></td><td><strong>{{ $pr->certified_funds_available }}</strong></td><td><strong>{{ $pr->approved_by }}</strong></td></tr>
+            <tr><td>{{ $pr->requested_by_position }}</td><td>{{ $pr->certified_funds_available_position }}</td><td>{{ $pr->approved_by_position }}</td></tr>
             <tr aria-hidden="true"><td></td><td></td><td></td></tr>
           </tbody>
         </table>

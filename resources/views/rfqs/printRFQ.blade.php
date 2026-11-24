@@ -181,8 +181,8 @@
                   @endphp
                   <td class="rfq-description"><strong>{{ $descriptionTitle }}</strong>@if ($descriptionDetails !== null)<br>{{ $descriptionDetails }}@endif</td>
                   <td></td>
-                  <td class="rfq-amount">{{ $item->unit_cost !== null ? number_format($item->unit_cost, 2) : '' }}</td>
-                  <td class="rfq-amount">{{ $item->amount !== null ? number_format($item->amount, 2) : '' }}</td>
+                  <td class="rfq-amount">{{ $item->unit_cost !== null ? '₱' . number_format($item->unit_cost, 2) : '' }}</td>
+                  <td class="rfq-amount">{{ $item->amount !== null ? '₱' . number_format($item->amount, 2) : '' }}</td>
                   <td></td><td></td>
                 @else
                   <td></td><td></td>
@@ -192,7 +192,7 @@
               </tr>
             @endforeach
             @if ($rfq->items->isNotEmpty())
-              <tr class="rfq-end-row"><td></td><td></td><td class="rfq-center">**nothing follows**</td><td></td><td></td><td></td><td></td><td></td></tr>
+              <tr class="rfq-end-row"><td></td><td></td><td class="rfq-center"><strong>**nothing follows**</strong></td><td></td><td></td><td></td><td></td><td></td></tr>
             @endif
           </tbody>
           <tbody>

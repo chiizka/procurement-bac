@@ -15,7 +15,7 @@ class PurchaseRequestController extends Controller
     private const HEADER_FIELDS = [
         'pr_date', 'entity_name', 'fund_cluster', 'office_section',
         'responsibility_center_code', 'purpose', 'end_user',
-        'requested_by', 'approved_by',
+        'requested_by', 'approved_by', 'requested_by_position', 'certified_funds_available', 'certified_funds_available_position', 'approved_by_position',
     ];
 
     public function index()
@@ -30,7 +30,7 @@ class PurchaseRequestController extends Controller
 
         $purchaseRequests->getCollection()
             ->where('is_group', true)
-            ->load('items.sourceItem.purchaseRequest:id,pr_no');
+            ->load(['items.sourceItem.purchaseRequest:id,pr_no', 'rfqs.items']);
 
         return view('purchase-requests.index', compact('purchaseRequests'));
     }

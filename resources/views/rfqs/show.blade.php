@@ -57,8 +57,8 @@
                                     <td class="px-4 py-2">{{ $item->quantity !== null ? rtrim(rtrim(number_format($item->quantity, 2), '0'), '.') : '' }}</td>
                                     <td class="px-4 py-2">{{ $item->unit }}</td>
                                     <td class="px-4 py-2 whitespace-pre-line">{{ $item->description }}</td>
-                                    <td class="px-4 py-2 text-right">{{ $item->unit_cost !== null ? number_format($item->unit_cost, 2) : '' }}</td>
-                                    <td class="px-4 py-2 text-right">{{ $item->amount !== null ? number_format($item->amount, 2) : '' }}</td>
+                                    <td class="px-4 py-2 text-right">{{ $item->unit_cost !== null ? '₱' . number_format($item->unit_cost, 2) : '' }}</td>
+                                    <td class="px-4 py-2 text-right">{{ $item->amount !== null ? '₱' . number_format($item->amount, 2) : '' }}</td>
                                 </tr>
                             @elseif ($item->line_type === \App\Enums\LineType::LotHeader)
                                 <tr class="bg-gray-50"><td colspan="5" class="px-4 py-2 font-semibold">{{ $item->description }}</td></tr>
@@ -70,7 +70,7 @@
                     <tfoot>
                         <tr class="bg-gray-50 font-semibold">
                             <td colspan="4" class="px-4 py-3 text-right">Total ABC</td>
-                            <td class="px-4 py-3 text-right">{{ number_format($rfq->total_amount, 2) }}</td>
+                            <td class="px-4 py-3 text-right">₱{{ number_format($rfq->total_amount, 2) }}</td>
                         </tr>
                     </tfoot>
                 </table>
