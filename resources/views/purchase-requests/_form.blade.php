@@ -1,6 +1,7 @@
 @php
     $locked = $pr && $pr->status === \App\Enums\DocStatus::Created;
     $input = 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm';
+    $signatoryRoles = ['requested_by' => 'Requested by', 'certified_funds_available' => 'Certified Funds Available', 'approved_by' => 'Approved by'];
     $rows = old('items', $pr ? $pr->items->map(fn ($i) => [
         'line_type' => $i->line_type->value,
         'stock_no' => $i->stock_no,
@@ -60,25 +61,20 @@
             <label class="block text-sm font-medium text-gray-700">End User</label>
             <input type="text" name="end_user" value="{{ old('end_user', $pr?->end_user) }}" class="{{ $input }}">
         </div>
-        <div>
-            <label for="requested_by" class="block text-sm font-medium text-gray-700">Requested by</label>
-            <input id="requested_by" type="text" name="requested_by" value="{{ old('requested_by', $pr?->requested_by) }}" class="{{ $input }}">
-            <label for="requested_by_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
-            <input id="requested_by_position" type="text" name="requested_by_position" value="{{ old('requested_by_position', $pr?->requested_by_position) }}" class="{{ $input }}">
-        </div>
-        <div>
-            <label for="certified_funds_available" class="block text-sm font-medium text-gray-700">Certified Funds Available</label>
-            <input id="certified_funds_available" type="text" name="certified_funds_available" value="{{ old('certified_funds_available', $pr?->certified_funds_available) }}" class="{{ $input }}">
-            <label for="certified_funds_available_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
-            <input id="certified_funds_available_position" type="text" name="certified_funds_available_position" value="{{ old('certified_funds_available_position', $pr?->certified_funds_available_position) }}" class="{{ $input }}">
-        </div>
-        <div>
-            <label for="approved_by" class="block text-sm font-medium text-gray-700">Approved by</label>
-            <input id="approved_by" type="text" name="approved_by" value="{{ old('approved_by', $pr?->approved_by) }}" class="{{ $input }}">
-            <label for="approved_by_position" class="mt-3 block text-sm font-medium text-gray-700">Position</label>
-            <input id="approved_by_position" type="text" name="approved_by_position" value="{{ old('approved_by_position', $pr?->approved_by_position) }}" class="{{ $input }}">
-        </div>
     </div>
+
+    <section class="bg-white shadow-sm sm:rounded-lg p-6" aria-labelledby="pr-signatories-heading">
+        <h3 id="pr-signatories-heading" class="font-semibold text-gray-800">Signatories</h3>
+        <div class="mt-4 space-y-3">
+            @foreach ($signatoryRoles as $role => $label)
+                <div class="grid grid-cols-1 items-center gap-3 sm:grid-cols-12">
+                    <label for="{{ $role }}" class="text-sm font-medium text-gray-700 sm:col-span-3">{{ $label }}</label>
+                    <input id="{{ $role }}" type="text" name="{{ $role }}" value="{{ old($role, $pr?->{$role}) }}" maxlength="255" placeholder="Full name" aria-label="{{ $label }} name" class="{{ $input }} !mt-0 sm:col-span-5">
+                    <input id="{{ $role }}_position" type="text" name="{{ $role }}_position" value="{{ old($role.'_position', $pr?->{$role.'_position'}) }}" maxlength="255" placeholder="Position" aria-label="{{ $label }} position" class="{{ $input }} !mt-0 sm:col-span-4">
+                </div>
+            @endforeach
+        </div>
+    </section>
 
     {{-- Items editor --}}
     <div class="bg-white shadow-sm sm:rounded-lg p-6" x-data="itemsEditor(@js($rows))">

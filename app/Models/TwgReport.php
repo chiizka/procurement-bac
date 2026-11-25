@@ -26,6 +26,11 @@ class TwgReport extends Model
         ];
     }
 
+    public function abstractOfQuotation(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(AbstractOfQuotation::class);
+    }
+
     public function rfq(): BelongsTo
     {
         return $this->belongsTo(Rfq::class);

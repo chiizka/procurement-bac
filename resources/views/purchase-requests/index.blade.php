@@ -58,11 +58,14 @@
                                         <span class="inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium {{ $pr->rfqs_count === 0 ? 'bg-gray-100 text-gray-600' : ($pr->rfqs_created_count === $pr->rfqs_count ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700') }}" title="{{ $pr->rfqs_created_count }} created RFQs out of {{ $pr->rfqs_count }} total">
                                             RFQ {{ $pr->rfqs_created_count }}/{{ $pr->rfqs_count }}
                                         </span>
+                                        <span class="inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium {{ $pr->rfqs_count === 0 ? 'bg-gray-100 text-gray-600' : ($pr->twgs_created_count === $pr->rfqs_count ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700') }}" title="{{ $pr->twgs_created_count }} created TWG reports out of {{ $pr->rfqs_count }} RFQs" aria-label="{{ $pr->twgs_created_count }} created TWG reports out of {{ $pr->rfqs_count }} RFQs">
+                                            TWG {{ $pr->twgs_created_count }}/{{ $pr->rfqs_count }}
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">
                                     <a href="{{ route('purchase-requests.show', $pr) }}" class="text-indigo-600 hover:underline">View</a>
-                                    @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin))
+                                    @if (auth()->user()->hasRole(\App\Enums\Role::Bac, \App\Enums\Role::Admin) && (! $pr->is_group || $pr->rfqs_count === 0))
                                         <a href="{{ route('purchase-requests.edit', $pr) }}" class="ml-3 text-indigo-600 hover:underline">Edit</a>
                                     @endif
                                 </td>

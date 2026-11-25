@@ -94,6 +94,7 @@ class TwgReportController extends Controller
     public function edit(TwgReport $twgReport)
     {
         $this->authorizeWrite();
+        abort_if($twgReport->abstractOfQuotation()->exists(), 403, 'This TWG report is locked by its Abstract.');
         $twgReport->load(['rfq.items', 'rfq.purchaseRequest', 'suppliers.quotes']);
 
         return view('twg-reports.edit', [
@@ -107,9 +108,12 @@ class TwgReportController extends Controller
     {
         $this->authorizeWrite();
 
+        abort_if($twgReport->abstractOfQuotation()->exists(), 403, 'This TWG report is locked by its Abstract.');
         $data = $this->clean($request->validate($this->rules($request, $twgReport)));
 
         DB::transaction(function () use ($data, $request, $twgReport) {
+            $twgReport = TwgReport::lockForUpdate()->findOrFail($twgReport->id);
+            abort_if($twgReport->abstractOfQuotation()->exists(), 403, 'This TWG report is locked by its Abstract.');
             $locked = $twgReport->status === DocStatus::Created;
 
             $payload = [

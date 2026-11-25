@@ -24,6 +24,7 @@ class PurchaseRequestController extends Controller
                 'items',
                 'rfqs',
                 'rfqs as rfqs_created_count' => fn ($q) => $q->where('status', 'created'),
+                'rfqs as twgs_created_count' => fn ($q) => $q->whereHas('twgReport', fn ($twg) => $twg->where('status', 'created')),
             ])
             ->whereNull('group_id') // grouped PRs are shown inside their group PR
             ->latest('pr_date')->latest('id')->paginate(15);
@@ -67,7 +68,9 @@ class PurchaseRequestController extends Controller
     public function show(PurchaseRequest $purchaseRequest)
     {
         $purchaseRequest->load([
-            'items',
+            'items.sourceItem.purchaseRequest:id,pr_no',
+            'rfqs.items',
+            'rfqs.twgReport.abstractOfQuotation',
             'group',    // the group PR this PR belongs to (if any)
             'members',  // the PRs inside this PR (if it is a group PR)
             'rfqs' => fn ($q) => $q->withCount([

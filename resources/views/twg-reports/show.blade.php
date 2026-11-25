@@ -129,7 +129,18 @@
                 </div>
             </div>
 
-            @if ($canWrite)
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <h3 class="font-semibold text-gray-800">Abstract of Quotations</h3>
+                @if ($twg->abstractOfQuotation)
+                    <a href="{{ route('abstracts.show', $twg->abstractOfQuotation) }}" class="mt-3 inline-block text-sm text-indigo-600 hover:underline">Open Abstract {{ $twg->abstractOfQuotation->abstract_no }}</a>
+                @elseif ($canWrite && $twg->status === \App\Enums\DocStatus::Created)
+                    <a href="{{ route('twg-reports.abstracts.create', $twg) }}" class="mt-3 inline-block text-sm text-indigo-600 hover:underline">Create Abstract</a>
+                @else
+                    <p class="mt-2 text-sm text-gray-500">Available after the TWG report is Created.</p>
+                @endif
+            </div>
+
+            @if ($canWrite && ! $twg->abstractOfQuotation)
                 <div class="flex items-center gap-3">
                     <a href="{{ route('twg-reports.edit', $twg) }}"
                        class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">Edit</a>
