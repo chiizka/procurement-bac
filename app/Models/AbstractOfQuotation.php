@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DocStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AbstractOfQuotation extends Model
 {
@@ -41,5 +42,10 @@ class AbstractOfQuotation extends Model
     public function twgReport(): BelongsTo
     {
         return $this->belongsTo(TwgReport::class);
+    }
+
+    public function purchaseOrder(): HasOne
+    {
+        return $this->hasOne(PurchaseOrder::class, 'abstract_id');
     }
 }

@@ -45,6 +45,7 @@ class PurchaseRequestController extends Controller
 
     public function store(StorePurchaseRequestRequest $request)
     {
+        $this->authorizeWrite();
         $pr = DB::transaction(function () use ($request) {
             $pr = PurchaseRequest::create(array_merge(
                 $request->safe()->only(self::HEADER_FIELDS),
@@ -70,7 +71,7 @@ class PurchaseRequestController extends Controller
         $purchaseRequest->load([
             'items.sourceItem.purchaseRequest:id,pr_no',
             'rfqs.items',
-            'rfqs.twgReport.abstractOfQuotation',
+            'rfqs.twgReport.abstractOfQuotation.purchaseOrder',
             'group',    // the group PR this PR belongs to (if any)
             'members',  // the PRs inside this PR (if it is a group PR)
             'rfqs' => fn ($q) => $q->withCount([
@@ -97,6 +98,9 @@ class PurchaseRequestController extends Controller
 
     public function update(StorePurchaseRequestRequest $request, PurchaseRequest $purchaseRequest)
     {
+        $this->authorizeWrite();
+        $this->ensureEditable($purchaseRequest);
+
         $this->ensureEditable($purchaseRequest);
 
         DB::transaction(function () use ($request, $purchaseRequest) {

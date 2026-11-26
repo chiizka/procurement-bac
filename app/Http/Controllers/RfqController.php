@@ -40,6 +40,8 @@ class RfqController extends Controller
 
     public function store(StoreRfqRequest $request, PurchaseRequest $purchaseRequest)
     {
+        $this->authorizeWrite();
+        $this->ensureCreatedPr($purchaseRequest);
         $this->ensureCreatedPr($purchaseRequest);
 
         $rfq = DB::transaction(function () use ($request, $purchaseRequest) {
@@ -89,6 +91,8 @@ class RfqController extends Controller
 
     public function update(StoreRfqRequest $request, Rfq $rfq)
     {
+        $this->authorizeWrite();
+        abort_if($rfq->twgReport()->exists(), 403, '...');
         abort_if($rfq->twgReport()->exists(), 403, 'This RFQ already has a TWG report and can no longer be edited.');
 
         DB::transaction(function () use ($request, $rfq) {

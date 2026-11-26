@@ -55,6 +55,7 @@ class AbstractOfQuotationController extends Controller
     public function edit(Request $request, AbstractOfQuotation $abstract)
     {
         $this->authorizeWrite($request);
+        abort_if($abstract->purchaseOrder()->exists(), 403, 'This Abstract is locked by a Purchase Order.');
         return view('abstracts.edit', $this->context($abstract) + ['lastSignatories' => null, 'lastHope' => null]);
     }
 
@@ -63,6 +64,7 @@ class AbstractOfQuotationController extends Controller
         $this->authorizeWrite($request);
         DB::transaction(function () use ($request, $abstract) {
             $locked = AbstractOfQuotation::lockForUpdate()->findOrFail($abstract->id);
+            abort_if($locked->purchaseOrder()->exists(), 403, 'This Abstract is locked by a Purchase Order.');
             $data = $this->validated($request, $locked->twgReport, $locked);
             if ($locked->status === DocStatus::Created) unset($data['abstract_no']);
             $data['status'] = $locked->status === DocStatus::Created || $request->input('action') === 'created'
