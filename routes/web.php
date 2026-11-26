@@ -7,6 +7,7 @@ use App\Http\Controllers\RfqController;
 use App\Http\Controllers\GroupPurchaseRequestController;
 use App\Http\Controllers\TwgReportController;
 use App\Http\Controllers\AbstractOfQuotationController;
+use App\Http\Controllers\PurchaseOrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/abstracts/{abstract}/print', [AbstractOfQuotationController::class, 'printPreview'])->name('abstracts.print');
     Route::resource('rfqs.twg-reports', TwgReportController::class)->shallow()->except(['index']);
     Route::get('/twg-reports/{twgReport}/print', [TwgReportController::class, 'printPreview'])->name('twg-reports.print');
+    Route::resource('abstracts.purchase-orders', PurchaseOrderController::class)->shallow()->except(['index']);
+    Route::get('/purchase-orders/{purchaseOrder}/print', [PurchaseOrderController::class, 'printPreview'])->name('purchase-orders.print');
 });
 
 require __DIR__.'/auth.php';

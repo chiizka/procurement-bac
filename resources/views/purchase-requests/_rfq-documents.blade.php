@@ -48,9 +48,41 @@
             <div class="pr-document-actions">
                 @if ($abstract)
                     <x-document-action :href="route('abstracts.print', $abstract)" preview :label="'Preview Abstract '.$abstract->abstract_no">Preview</x-document-action>
-                    @if ($canWrite)<x-document-action :href="route('abstracts.edit', $abstract)">{{ $abstract->status === \App\Enums\DocStatus::Draft ? 'Continue draft' : 'Edit' }}</x-document-action>@endif
+                    @if ($canWrite && ! $abstract->purchaseOrder)
+                        <x-document-action :href="route('abstracts.edit', $abstract)">{{ $abstract->status === \App\Enums\DocStatus::Draft ? 'Continue draft' : 'Edit' }}</x-document-action>
+                    @else <span class="text-sm text-gray-500">{{ $canWrite ? 'Locked by Purchase Order' : 'Read-only' }}</span>@endif
                 @elseif ($canWrite && $rfq->twgReport?->status === \App\Enums\DocStatus::Created)
                     <x-document-action :href="route('twg-reports.abstracts.create', $rfq->twgReport)">Create Abstract</x-document-action>
+                @endif
+            </div>
+        </div>
+        {{-- Purchase Order: written by procurement only. Everyone else sees it once it is Created. --}}
+        @php($po = $abstract?->purchaseOrder)
+        @php($isProcurement = auth()->user()->hasRole(\App\Enums\Role::Procurement))
+        @php($poVisible = $po && $po->isViewableBy(auth()->user()))
+        @php($awarded = $abstract && $abstract->status === \App\Enums\DocStatus::Created && $abstract->recommendation === 'award')
+        <div class="flex flex-wrap items-center justify-between gap-4 py-3">
+            <div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-medium text-gray-900">Purchase Order</span>
+                    @if ($poVisible)<x-status-chip :status="$po->status->value" />
+                    @else <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">{{ $po ? 'In preparation' : 'Not started' }}</span>@endif
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                    @if ($poVisible)PO {{ $po->po_no }} &middot; {{ $po->supplier_name }} &middot; PhP {{ number_format($po->amount_due, 2) }}
+                    @elseif ($po)Not available until procurement creates it.
+                    @elseif ($abstract && $abstract->status === \App\Enums\DocStatus::Created && $abstract->recommendation !== 'award')No PO. The Abstract does not recommend an award.
+                    @else Available after the Abstract is Created with an award.@endif
+                </p>
+            </div>
+            <div class="pr-document-actions">
+                @if ($poVisible)
+                    <x-document-action :href="route('purchase-orders.print', $po)" preview :label="'Preview PO '.$po->po_no">Preview</x-document-action>
+                    @if ($isProcurement)
+                        <x-document-action :href="route('purchase-orders.edit', $po)">{{ $po->status === \App\Enums\DocStatus::Draft ? 'Continue draft' : 'Edit' }}</x-document-action>
+                    @else <span class="text-sm text-gray-500">Read-only</span>@endif
+                @elseif ($isProcurement && $awarded && ! $po)
+                    <x-document-action :href="route('abstracts.purchase-orders.create', $abstract)">Create PO</x-document-action>
                 @endif
             </div>
         </div>
